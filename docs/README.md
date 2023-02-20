@@ -1,17 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
   <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>My Website</title>
-    <link rel="stylesheet" href="./style.css">
-    <link rel="icon" href="./favicon.ico" type="image/x-icon">
+    <title>My website</title>
   </head>
   <body>
-    <main>
-        <h1>Welcome to Bob's Website</h1>  
-    </main>
-	<script src="index.js"></script>
+    <h1>Welcome to Bob's Website</h1>
+    <p>This is some text on my website.</p>
+    <img src="BS Logo.png" alt="My image">
   </body>
 </html>

@@ -1,13 +1,11 @@
-##
-<!doctype html>
+<!DOCTYPE html>
 <html>
-<head>
-  <title>Our Funky HTML Page</title>
-  <meta name="description" content="Our first page">
-  <meta name="keywords" content="html tutorial template">
-</head>
-
-<body>
-  Content goes here.
-</body>
+  <head>
+    <title>Bobby Acacio Arts & Sciences Scholarship</title>
+  </head>
+  <body>
+    <h1>Welcome to Bob's Website</h1>
+    <p>This is some blank text on the website. This published from root Docs file.</p>
+    <img src="BS Logo.png" alt="My image">
+  </body>
 </html>

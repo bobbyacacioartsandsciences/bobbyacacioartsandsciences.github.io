@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Bobby Acacio Arts & Sciences Scholarship/title>
+    <title>Bobby Acacio Arts & Sciences Scholarship</title>
   </head>
   <body>
     <h1>Welcome to Bob's Website</h1>

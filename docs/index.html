@@ -6,6 +6,53 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 		<link rel="stylesheet" href="assets/css/main.css" />
 		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+	<style>
+		/* ── WC Pool Tracker ── */
+		#pool-root { font-family: inherit; color: #d4d4d4; }
+		.pool-mini { display: grid; grid-template-columns: repeat(4,1fr); gap: 6px; margin-bottom: 14px; }
+		.pool-mini-card { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 8px 6px; text-align: center; cursor: pointer; transition: background .2s; }
+		.pool-mini-card:hover { background: rgba(255,255,255,0.09); }
+		.pool-mini-card.rank0 { border-color: rgba(255,255,255,0.3); }
+		.pool-mini-name { font-size: 11px; font-weight: 700; letter-spacing: .06em; margin-bottom: 2px; }
+		.pool-mini-pts { font-size: 22px; font-weight: 700; line-height: 1; }
+		.pool-mini-gd { font-size: 10px; color: #777; margin-top: 2px; }
+		.pool-tabs { display: flex; gap: 6px; margin-bottom: 14px; flex-wrap: wrap; }
+		.pool-tab { padding: 6px 14px; border-radius: 5px; border: 1px solid rgba(255,255,255,0.15); background: transparent; color: #999; font-size: 12px; font-weight: 600; cursor: pointer; letter-spacing: .04em; transition: all .2s; }
+		.pool-tab:hover { color: #fff; border-color: rgba(255,255,255,0.3); }
+		.pool-tab.active { background: rgba(255,255,255,0.12); color: #fff; border-color: rgba(255,255,255,0.35); }
+		.pool-sub-tabs { display: flex; gap: 4px; margin-bottom: 12px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; flex-wrap: wrap; }
+		.pool-sub-tab { padding: 4px 10px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.12); background: transparent; color: #777; font-size: 11px; font-weight: 600; cursor: pointer; white-space: nowrap; transition: all .2s; flex-shrink: 0; }
+		.pool-sub-tab.active { border-color: rgba(255,255,255,0.35); color: #fff; background: rgba(255,255,255,0.08); }
+		.pool-game { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 10px 12px; margin-bottom: 8px; }
+		.pool-game-row { display: flex; align-items: center; gap: 8px; }
+		.pool-team { flex: 1; font-size: 12px; font-weight: 600; }
+		.pool-team.right { text-align: right; }
+		.pool-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: 5px; flex-shrink: 0; }
+		.pool-score-input { width: 40px; height: 34px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 5px; color: #fff; text-align: center; font-size: 16px; font-weight: 700; outline: none; -moz-appearance: textfield; }
+		.pool-score-input::-webkit-outer-spin-button, .pool-score-input::-webkit-inner-spin-button { -webkit-appearance: none; }
+		.pool-score-input:focus { border-color: rgba(255,255,255,0.4); background: rgba(255,255,255,0.12); }
+		.pool-sep { color: #555; font-size: 14px; font-weight: 600; }
+		.pool-pts-preview { display: flex; justify-content: space-between; margin-top: 8px; padding-top: 7px; border-top: 1px solid rgba(255,255,255,0.07); font-size: 11px; }
+		.pool-badge { font-size: 9px; font-weight: 700; letter-spacing: .05em; padding: 1px 5px; border-radius: 3px; }
+		.pool-stand-card { border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 8px; overflow: hidden; }
+		.pool-stand-header { padding: 12px 14px; display: flex; align-items: center; gap: 10px; cursor: pointer; }
+		.pool-stand-name { font-size: 15px; font-weight: 700; flex: 1; }
+		.pool-stand-pts { font-size: 26px; font-weight: 700; }
+		.pool-stand-sub { font-size: 10px; color: #777; margin-top: 2px; }
+		.pool-breakdown { padding: 0 14px 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
+		.pool-team-row { display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.03); border-radius: 5px; padding: 4px 8px; font-size: 11px; }
+		.pool-team-pts { font-weight: 700; font-size: 12px; }
+		.pool-bonus-tag { font-size: 9px; font-weight: 700; color: #f59e0b; }
+		.pool-ko-game { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 12px; margin-bottom: 10px; }
+		.pool-ko-label { font-size: 10px; color: #555; letter-spacing: .07em; text-transform: uppercase; margin-bottom: 8px; }
+		.pool-select { width: 100%; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 5px; color: #ddd; font-size: 12px; padding: 6px 8px; outline: none; margin-bottom: 10px; }
+		.pool-select:focus { border-color: rgba(255,255,255,0.35); }
+		.pool-pen-box { background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.25); border-radius: 6px; padding: 8px 10px; margin-top: 8px; font-size: 12px; }
+		.pool-pen-btn { flex: 1; padding: 7px; border-radius: 5px; border: 1px solid rgba(255,255,255,0.15); background: transparent; color: #aaa; font-size: 12px; font-weight: 600; cursor: pointer; transition: all .15s; }
+		.pool-pen-btn.chosen { color: #fff; }
+		.pool-rule-note { font-size: 10px; color: #555; margin-bottom: 12px; line-height: 1.6; padding: 8px 10px; background: rgba(255,255,255,0.03); border-radius: 6px; border-left: 2px solid rgba(255,255,255,0.1); }
+		.pool-medal { font-size: 16px; }
+	</style>
 	</head>
 	<body class="is-preload">
 
@@ -30,6 +77,7 @@
 								<li><a href="#bobby">Bobby</a></li>
 								<li><a href="#prompt">Prompt</a></li>
 								<li><a href="#previouswinners">Winners</a></li>
+								<li><a href="#wcpool">⚽ Pool</a></li>
 								<li><a href="#contact">Contact</a></li>
 								<!--<li><a href="#elements">Elements</a></li>-->
 							</ul>
@@ -155,6 +203,12 @@
 								   </p>
 								
 						</article>
+
+						<!-- WC Pool -->
+							<article id="wcpool">
+								<h2 class="major">⚽ WC 2026 Pool</h2>
+								<div id="pool-root"><p style="color:#777;font-size:13px;">Loading pool tracker...</p></div>
+							</article>
 
 						<!-- Contact -->
 							<article id="contact">
@@ -447,6 +501,418 @@ print 'It took ' + i + ' iterations to sort the deck.';</code></pre>
 			<script src="assets/js/breakpoints.min.js"></script>
 			<script src="assets/js/util.js"></script>
 			<script src="assets/js/main.js"></script>
+
+	<script>
+	(function(){
+	'use strict';
+
+	// ── ROSTERS ──────────────────────────────────────────────────────────────
+	var PLAYERS = {
+		Matt:   ['Spain','Portugal','Netherlands','Ecuador','Uruguay','Scotland','Canada','Iran','Bosnia & Herzegovina','Curaçao','Cape Verde','Haiti'],
+		Blaise: ['France','England','Colombia','Senegal','Croatia','Paraguay','Egypt','New Zealand','Saudi Arabia','DR Congo','Iraq','Qatar'],
+		Damian: ['Mexico','Germany','Norway','Morocco','South Africa','Australia','Ghana','Panama','Algeria','Uzbekistan','Tunisia','Jordan'],
+		Bob:    ['Brazil','Argentina','Japan','Belgium','USA','Switzerland','South Korea','Ivory Coast','Sweden','Turkey','Austria','Czechia']
+	};
+
+	var PC = {
+		Matt:   { accent:'#60A5FA', bg:'rgba(96,165,250,0.12)',  dot:'#3B82F6' },
+		Blaise: { accent:'#F87171', bg:'rgba(248,113,113,0.12)', dot:'#EF4444' },
+		Damian: { accent:'#34D399', bg:'rgba(52,211,153,0.12)',  dot:'#10B981' },
+		Bob:    { accent:'#FBBF24', bg:'rgba(251,191,36,0.12)',  dot:'#F59E0B' }
+	};
+
+	var MEDALS = ['🥇','🥈','🥉','4️⃣'];
+
+	var TEAM_OWNER = {};
+	Object.keys(PLAYERS).forEach(function(p){ PLAYERS[p].forEach(function(t){ TEAM_OWNER[t]=p; }); });
+	var ALL_TEAMS = Object.keys(TEAM_OWNER).sort();
+
+	// ── GROUP GAMES (72) ─────────────────────────────────────────────────────
+	var GG = [
+		{id:'A1',g:'A',t1:'Mexico',t2:'South Africa'},{id:'A2',g:'A',t1:'Mexico',t2:'South Korea'},{id:'A3',g:'A',t1:'Mexico',t2:'Czechia'},
+		{id:'A4',g:'A',t1:'South Africa',t2:'South Korea'},{id:'A5',g:'A',t1:'South Africa',t2:'Czechia'},{id:'A6',g:'A',t1:'South Korea',t2:'Czechia'},
+		{id:'B1',g:'B',t1:'Canada',t2:'Bosnia & Herzegovina'},{id:'B2',g:'B',t1:'Canada',t2:'Qatar'},{id:'B3',g:'B',t1:'Canada',t2:'Switzerland'},
+		{id:'B4',g:'B',t1:'Bosnia & Herzegovina',t2:'Qatar'},{id:'B5',g:'B',t1:'Bosnia & Herzegovina',t2:'Switzerland'},{id:'B6',g:'B',t1:'Qatar',t2:'Switzerland'},
+		{id:'C1',g:'C',t1:'Brazil',t2:'Morocco'},{id:'C2',g:'C',t1:'Brazil',t2:'Haiti'},{id:'C3',g:'C',t1:'Brazil',t2:'Scotland'},
+		{id:'C4',g:'C',t1:'Morocco',t2:'Haiti'},{id:'C5',g:'C',t1:'Morocco',t2:'Scotland'},{id:'C6',g:'C',t1:'Haiti',t2:'Scotland'},
+		{id:'D1',g:'D',t1:'USA',t2:'Paraguay'},{id:'D2',g:'D',t1:'USA',t2:'Australia'},{id:'D3',g:'D',t1:'USA',t2:'Turkey'},
+		{id:'D4',g:'D',t1:'Paraguay',t2:'Australia'},{id:'D5',g:'D',t1:'Paraguay',t2:'Turkey'},{id:'D6',g:'D',t1:'Australia',t2:'Turkey'},
+		{id:'E1',g:'E',t1:'Germany',t2:'Curaçao'},{id:'E2',g:'E',t1:'Germany',t2:'Ivory Coast'},{id:'E3',g:'E',t1:'Germany',t2:'Ecuador'},
+		{id:'E4',g:'E',t1:'Curaçao',t2:'Ivory Coast'},{id:'E5',g:'E',t1:'Curaçao',t2:'Ecuador'},{id:'E6',g:'E',t1:'Ivory Coast',t2:'Ecuador'},
+		{id:'F1',g:'F',t1:'Netherlands',t2:'Japan'},{id:'F2',g:'F',t1:'Netherlands',t2:'Sweden'},{id:'F3',g:'F',t1:'Netherlands',t2:'Tunisia'},
+		{id:'F4',g:'F',t1:'Japan',t2:'Sweden'},{id:'F5',g:'F',t1:'Japan',t2:'Tunisia'},{id:'F6',g:'F',t1:'Sweden',t2:'Tunisia'},
+		{id:'G1',g:'G',t1:'Belgium',t2:'Egypt'},{id:'G2',g:'G',t1:'Belgium',t2:'Iran'},{id:'G3',g:'G',t1:'Belgium',t2:'New Zealand'},
+		{id:'G4',g:'G',t1:'Egypt',t2:'Iran'},{id:'G5',g:'G',t1:'Egypt',t2:'New Zealand'},{id:'G6',g:'G',t1:'Iran',t2:'New Zealand'},
+		{id:'H1',g:'H',t1:'Spain',t2:'Cape Verde'},{id:'H2',g:'H',t1:'Spain',t2:'Saudi Arabia'},{id:'H3',g:'H',t1:'Spain',t2:'Uruguay'},
+		{id:'H4',g:'H',t1:'Cape Verde',t2:'Saudi Arabia'},{id:'H5',g:'H',t1:'Cape Verde',t2:'Uruguay'},{id:'H6',g:'H',t1:'Saudi Arabia',t2:'Uruguay'},
+		{id:'I1',g:'I',t1:'France',t2:'Senegal'},{id:'I2',g:'I',t1:'France',t2:'Iraq'},{id:'I3',g:'I',t1:'France',t2:'Norway'},
+		{id:'I4',g:'I',t1:'Senegal',t2:'Iraq'},{id:'I5',g:'I',t1:'Senegal',t2:'Norway'},{id:'I6',g:'I',t1:'Iraq',t2:'Norway'},
+		{id:'J1',g:'J',t1:'Argentina',t2:'Algeria'},{id:'J2',g:'J',t1:'Argentina',t2:'Austria'},{id:'J3',g:'J',t1:'Argentina',t2:'Jordan'},
+		{id:'J4',g:'J',t1:'Algeria',t2:'Austria'},{id:'J5',g:'J',t1:'Algeria',t2:'Jordan'},{id:'J6',g:'J',t1:'Austria',t2:'Jordan'},
+		{id:'K1',g:'K',t1:'Portugal',t2:'DR Congo'},{id:'K2',g:'K',t1:'Portugal',t2:'Uzbekistan'},{id:'K3',g:'K',t1:'Portugal',t2:'Colombia'},
+		{id:'K4',g:'K',t1:'DR Congo',t2:'Uzbekistan'},{id:'K5',g:'K',t1:'DR Congo',t2:'Colombia'},{id:'K6',g:'K',t1:'Uzbekistan',t2:'Colombia'},
+		{id:'L1',g:'L',t1:'England',t2:'Croatia'},{id:'L2',g:'L',t1:'England',t2:'Ghana'},{id:'L3',g:'L',t1:'England',t2:'Panama'},
+		{id:'L4',g:'L',t1:'Croatia',t2:'Ghana'},{id:'L5',g:'L',t1:'Croatia',t2:'Panama'},{id:'L6',g:'L',t1:'Ghana',t2:'Panama'}
+	];
+
+	var KO_ROUNDS = [
+		{id:'R32',label:'Round of 32',count:16},
+		{id:'R16',label:'Round of 16',count:8},
+		{id:'QF', label:'Quarterfinals',count:4},
+		{id:'SF', label:'Semifinals',count:2},
+		{id:'F',  label:'Final',count:1}
+	];
+
+	// ── STATE ─────────────────────────────────────────────────────────────────
+	var state = {
+		gs: {},       // group scores: { gameId: {s1,s2} }
+		ko: [],       // knockout games
+		view: 'standings',
+		group: 'A',
+		round: 'R32',
+		expanded: null
+	};
+
+	function initKO() {
+		var games = [];
+		KO_ROUNDS.forEach(function(r){
+			for(var i=0;i<r.count;i++){
+				games.push({id:r.id+'-'+i,round:r.id,t1:'',t2:'',s1:'',s2:'',pens:false,pw:''});
+			}
+		});
+		return games;
+	}
+
+	function loadState() {
+		try { var g=localStorage.getItem('wc26gs'); if(g) state.gs=JSON.parse(g); } catch(e){}
+		try { var k=localStorage.getItem('wc26ko'); if(k) state.ko=JSON.parse(k); else state.ko=initKO(); } catch(e){ state.ko=initKO(); }
+		if(!state.ko||!state.ko.length) state.ko=initKO();
+	}
+
+	function saveState() {
+		try { localStorage.setItem('wc26gs',JSON.stringify(state.gs)); } catch(e){}
+		try { localStorage.setItem('wc26ko',JSON.stringify(state.ko)); } catch(e){}
+	}
+
+	// ── SCORING ───────────────────────────────────────────────────────────────
+	function calcScores() {
+		var pts={}, gf={}, ga={};
+		ALL_TEAMS.forEach(function(t){ pts[t]=0; gf[t]=0; ga[t]=0; });
+
+		function proc(t1,t2,r1,r2,isKO,pens,pw) {
+			var s1=parseInt(r1), s2=parseInt(r2);
+			if(!t1||!t2||isNaN(s1)||isNaN(s2)) return;
+			if(!(t1 in pts)||!(t2 in pts)) return;
+			if(isKO&&s1===0&&s2===0&&pens&&pw) {
+				var loser=pw===t1?t2:t1;
+				pts[pw]+=4; pts[loser]+=1; return;
+			}
+			gf[t1]+=s1; gf[t2]+=s2; ga[t1]+=s2; ga[t2]+=s1;
+			pts[t1]+=s1; pts[t2]+=s2;
+			if(s1>s2) pts[t1]+=3;
+			else if(s2>s1) pts[t2]+=3;
+			else { pts[t1]+=1; pts[t2]+=1; }
+			if(s2===0) pts[t1]+=1;
+			if(s1===0) pts[t2]+=1;
+		}
+
+		GG.forEach(function(g){
+			var sc=state.gs[g.id]||{};
+			proc(g.t1,g.t2,sc.s1,sc.s2,false,false,'');
+		});
+		state.ko.forEach(function(g){
+			proc(g.t1,g.t2,g.s1,g.s2,true,g.pens,g.pw);
+		});
+
+		// +5 bonus
+		ALL_TEAMS.forEach(function(t){
+			var played = GG.some(function(g){
+				var sc=state.gs[g.id]||{};
+				return (g.t1===t||g.t2===t)&&sc.s1!==undefined&&sc.s1!==''&&!isNaN(parseInt(sc.s1));
+			})||state.ko.some(function(g){
+				return (g.t1===t||g.t2===t)&&g.s1!==''&&!isNaN(parseInt(g.s1));
+			});
+			if(played&&gf[t]===0) pts[t]+=5;
+		});
+
+		var pPts={}, pGD={}, pBD={};
+		Object.keys(PLAYERS).forEach(function(p){
+			pPts[p]=0; pGD[p]=0; pBD[p]={};
+			PLAYERS[p].forEach(function(t){
+				pPts[p]+=pts[t]; pGD[p]+=(gf[t]-ga[t]); pBD[p][t]=pts[t];
+			});
+		});
+		return {pPts:pPts,pGD:pGD,pBD:pBD,tPts:pts,tGF:gf};
+	}
+
+	function getRankings(sc) {
+		return Object.keys(PLAYERS).map(function(p){
+			return {p:p,pts:sc.pPts[p],gd:sc.pGD[p]};
+		}).sort(function(a,b){ return b.pts-a.pts||b.gd-a.gd; });
+	}
+
+	// ── HELPERS ───────────────────────────────────────────────────────────────
+	function dot(team,size) {
+		size=size||7;
+		var o=TEAM_OWNER[team];
+		if(!o) return '';
+		return '<span class="pool-dot" style="width:'+size+'px;height:'+size+'px;background:'+PC[o].dot+'"></span>';
+	}
+
+	function badge(player) {
+		return '<span class="pool-badge" style="background:'+PC[player].bg+';color:'+PC[player].accent+';border:1px solid '+PC[player].accent+'">'+player.toUpperCase()+'</span>';
+	}
+
+	function gamePoints(s1,s2) {
+		var p1=s1+(s1>s2?3:s1===s2?1:0)+(s2===0?1:0);
+		var p2=s2+(s2>s1?3:s2===s1?1:0)+(s1===0?1:0);
+		return {p1:p1,p2:p2};
+	}
+
+	function esc(str) {
+		return String(str).replace(/'/g,"\\'");
+	}
+
+	// ── RENDER MINI STANDINGS (top strip) ─────────────────────────────────────
+	function renderMini(sc) {
+		var ranks=getRankings(sc);
+		var html='<div class="pool-mini">';
+		ranks.forEach(function(r,i){
+			var c=PC[r.p];
+			html+='<div class="pool-mini-card'+(i===0?' rank0':'')+'" style="border-color:'+(i===0?c.accent:'rgba(255,255,255,0.1)')+';background:'+(i===0?c.bg:'rgba(255,255,255,0.04)')+'" onclick="wcp.expand(\''+r.p+'\')">';
+			html+='<div class="pool-mini-name" style="color:'+c.accent+'">'+MEDALS[i]+' '+r.p+'</div>';
+			html+='<div class="pool-mini-pts" style="color:'+(i===0?c.accent:'#e2e8f0')+'">'+r.pts+'</div>';
+			html+='<div class="pool-mini-gd">GD '+(r.gd>0?'+':'')+r.gd+'</div>';
+			html+='</div>';
+		});
+		html+='</div>';
+		return html;
+	}
+
+	// ── RENDER STANDINGS ──────────────────────────────────────────────────────
+	function renderStandings(sc) {
+		var ranks=getRankings(sc);
+		var html='<div id="pool-standings-body">';
+		ranks.forEach(function(r,i){
+			var c=PC[r.p];
+			var isExp=state.expanded===r.p;
+			html+='<div class="pool-stand-card" style="border-color:'+(i===0?c.accent:'rgba(255,255,255,0.1)')+';background:linear-gradient(135deg,'+c.bg+' 0%,rgba(255,255,255,0.02) 50%)">';
+			html+='<div class="pool-stand-header" onclick="wcp.expand(\''+r.p+'\')">';
+			html+='<span class="pool-medal">'+MEDALS[i]+'</span>';
+			html+='<div style="flex:1"><div class="pool-stand-name" style="color:'+c.accent+'">'+r.p+' '+badge(r.p)+'</div>';
+			html+='<div class="pool-stand-sub">GD '+(r.gd>0?'+':'')+r.gd+' &nbsp;·&nbsp; 12 teams</div></div>';
+			html+='<div style="text-align:right"><div class="pool-stand-pts" style="color:'+c.accent+'">'+r.pts+'</div><div style="font-size:10px;color:#555;text-transform:uppercase;letter-spacing:.06em">pts</div></div>';
+			html+='<span style="color:#555;font-size:13px;margin-left:8px">'+(isExp?'▲':'▼')+'</span>';
+			html+='</div>';
+			if(isExp) {
+				html+='<div class="pool-breakdown">';
+				PLAYERS[r.p].forEach(function(team){
+					var tp=sc.pBD[r.p][team]||0;
+					var isBonus=sc.tGF[team]===0&&tp>=5;
+					html+='<div class="pool-team-row">';
+					html+='<span style="display:flex;align-items:center;gap:5px">'+dot(team,5)+'<span style="color:'+(tp>0?'#cbd5e1':'#4b5563')+'">'+team+'</span>'+(isBonus?'<span class="pool-bonus-tag">+5⭐</span>':'' )+'</span>';
+					html+='<span class="pool-team-pts" style="color:'+(tp>0?c.accent:'#374151')+'">'+tp+'</span>';
+					html+='</div>';
+				});
+				html+='</div>';
+			}
+			html+='</div>';
+		});
+		html+='</div>';
+		return html;
+	}
+
+	// ── RENDER GROUPS ─────────────────────────────────────────────────────────
+	function renderGroups() {
+		var groups='ABCDEFGHIJKL'.split('');
+		var html='<div class="pool-sub-tabs">';
+		groups.forEach(function(g){
+			html+='<button class="pool-sub-tab'+(state.group===g?' active':'')+'" onclick="wcp.setGroup(\''+g+'\')">Group '+g+'</button>';
+		});
+		html+='</div>';
+
+		var games=GG.filter(function(g){return g.g===state.group;});
+		games.forEach(function(game){
+			var sc=state.gs[game.id]||{};
+			var o1=TEAM_OWNER[game.t1]||null, o2=TEAM_OWNER[game.t2]||null;
+			var c1=o1?PC[o1].accent:'#94a3b8', c2=o2?PC[o2].accent:'#94a3b8';
+
+			html+='<div class="pool-game">';
+			html+='<div class="pool-game-row">';
+			// Team 1
+			html+='<div class="pool-team"><div style="display:flex;align-items:center;gap:5px;margin-bottom:3px">'+dot(game.t1)+'<span style="color:'+c1+'">'+game.t1+'</span></div>'+(o1?badge(o1):'')+'</div>';
+			// Score inputs
+			html+='<div style="display:flex;align-items:center;gap:5px">';
+			html+='<input class="pool-score-input" type="number" min="0" max="20" id="gs-'+game.id+'-s1" value="'+(sc.s1!==undefined?sc.s1:'')+'" oninput="wcp.gs(\''+esc(game.id)+'\',\'s1\',this.value)" placeholder="—">';
+			html+='<span class="pool-sep">–</span>';
+			html+='<input class="pool-score-input" type="number" min="0" max="20" id="gs-'+game.id+'-s2" value="'+(sc.s2!==undefined?sc.s2:'')+'" oninput="wcp.gs(\''+esc(game.id)+'\',\'s2\',this.value)" placeholder="—">';
+			html+='</div>';
+			// Team 2
+			html+='<div class="pool-team right"><div style="display:flex;align-items:center;justify-content:flex-end;gap:5px;margin-bottom:3px"><span style="color:'+c2+'">'+game.t2+'</span>'+dot(game.t2)+'</div>'+(o2?badge(o2):'')+'</div>';
+			html+='</div>';
+
+			// Points preview
+			var s1v=parseInt(sc.s1), s2v=parseInt(sc.s2);
+			if(!isNaN(s1v)&&!isNaN(s2v)&&sc.s1!==''&&sc.s2!=='') {
+				var gp=gamePoints(s1v,s2v);
+				html+='<div class="pool-pts-preview">';
+				html+='<span style="color:'+c1+'">+'+gp.p1+' pts</span>';
+				html+='<span style="color:#4b5563;font-size:10px;letter-spacing:.06em">POINTS EARNED</span>';
+				html+='<span style="color:'+c2+'">+'+gp.p2+' pts</span>';
+				html+='</div>';
+			}
+			html+='</div>';
+		});
+		return html;
+	}
+
+	// ── RENDER KNOCKOUT ───────────────────────────────────────────────────────
+	function renderKnockout() {
+		var html='<div class="pool-sub-tabs">';
+		KO_ROUNDS.forEach(function(r){
+			html+='<button class="pool-sub-tab'+(state.round===r.id?' active':'')+'" onclick="wcp.setRound(\''+r.id+'\')">'+r.label+'</button>';
+		});
+		html+='</div>';
+
+		var games=state.ko.filter(function(g){return g.round===state.round;});
+		games.forEach(function(game,idx){
+			var o1=TEAM_OWNER[game.t1]||null, o2=TEAM_OWNER[game.t2]||null;
+			var c1=o1?PC[o1].accent:'#64748b', c2=o2?PC[o2].accent:'#64748b';
+			var s1v=parseInt(game.s1), s2v=parseInt(game.s2);
+			var isZZ=!isNaN(s1v)&&!isNaN(s2v)&&s1v===0&&s2v===0&&game.s1!==''&&game.s2!=='';
+
+			html+='<div class="pool-ko-game">';
+			html+='<div class="pool-ko-label">Match '+(idx+1)+'</div>';
+
+			// Team selects
+			html+='<div style="display:flex;gap:8px;align-items:center;margin-bottom:6px">';
+			html+='<select class="pool-select" style="color:'+c1+'" onchange="wcp.ko(\''+game.id+'\',\'t1\',this.value)">';
+			html+='<option value="">— Team 1 —</option>';
+			ALL_TEAMS.forEach(function(t){ html+='<option value="'+t+'"'+(game.t1===t?' selected':'')+'>'+t+'</option>'; });
+			html+='</select>';
+			html+='<span style="color:#4b5563;font-size:12px;flex-shrink:0">vs</span>';
+			html+='<select class="pool-select" style="color:'+c2+'" onchange="wcp.ko(\''+game.id+'\',\'t2\',this.value)">';
+			html+='<option value="">— Team 2 —</option>';
+			ALL_TEAMS.forEach(function(t){ html+='<option value="'+t+'"'+(game.t2===t?' selected':'')+'>'+t+'</option>'; });
+			html+='</select>';
+			html+='</div>';
+
+			// Owner badges
+			html+='<div style="display:flex;justify-content:space-between;margin-bottom:8px">';
+			html+='<div>'+(o1?badge(o1):'')+'</div><div>'+(o2?badge(o2):'')+'</div></div>';
+
+			// Score inputs
+			html+='<div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:6px">';
+			html+='<input class="pool-score-input" type="number" min="0" max="20" value="'+game.s1+'" oninput="wcp.ko(\''+game.id+'\',\'s1\',this.value)" placeholder="—">';
+			html+='<span class="pool-sep">–</span>';
+			html+='<input class="pool-score-input" type="number" min="0" max="20" value="'+game.s2+'" oninput="wcp.ko(\''+game.id+'\',\'s2\',this.value)" placeholder="—">';
+			html+='</div>';
+
+			// Penalty toggle
+			if(isZZ) {
+				html+='<div class="pool-pen-box">';
+				html+='<label style="display:flex;align-items:center;gap:8px;cursor:pointer;color:#f59e0b;font-weight:700;margin-bottom:'+(game.pens&&game.t1&&game.t2?'8':'0')+'px">';
+				html+='<input type="checkbox" '+(game.pens?'checked':'')+' onchange="wcp.ko(\''+game.id+'\',\'pens\',this.checked)"> ⚡ Went to Penalties</label>';
+				if(game.pens&&game.t1&&game.t2) {
+					html+='<div style="font-size:11px;color:#94a3b8;margin-bottom:6px">Who won on penalties?</div>';
+					html+='<div style="display:flex;gap:8px">';
+					[game.t1,game.t2].forEach(function(team){
+						var oc=TEAM_OWNER[team]?PC[TEAM_OWNER[team]].accent:'#94a3b8';
+						var chosen=game.pw===team;
+						html+='<button class="pool-pen-btn'+(chosen?' chosen':'')+'" style="border-color:'+(chosen?oc:'rgba(255,255,255,0.15)')+';background:'+(chosen?(TEAM_OWNER[team]?PC[TEAM_OWNER[team]].bg:'rgba(255,255,255,0.1)'):'transparent')+';color:'+(chosen?oc:'#94a3b8')+'" onclick="wcp.ko(\''+game.id+'\',\'pw\',\''+esc(team)+'\')">'+team+'</button>';
+					});
+					html+='</div>';
+				}
+				html+='</div>';
+			}
+
+			// Points preview
+			if(game.t1&&game.t2&&game.s1!==''&&game.s2!==''&&!isNaN(s1v)) {
+				var lbl1,lbl2;
+				if(isZZ&&game.pens&&game.pw) {
+					lbl1=game.pw===game.t1?'4 pts (W+SO)':'1 pt (SO)';
+					lbl2=game.pw===game.t2?'4 pts (W+SO)':'1 pt (SO)';
+				} else {
+					var gp=gamePoints(s1v,s2v);
+					lbl1='+'+gp.p1+' pts'; lbl2='+'+gp.p2+' pts';
+				}
+				html+='<div class="pool-pts-preview">';
+				html+='<span style="color:'+c1+'">'+lbl1+'</span>';
+				html+='<span style="color:#374151;font-size:10px;letter-spacing:.06em">POINTS</span>';
+				html+='<span style="color:'+c2+'">'+lbl2+'</span>';
+				html+='</div>';
+			}
+			html+='</div>';
+		});
+		return html;
+	}
+
+	// ── FULL RENDER ───────────────────────────────────────────────────────────
+	function renderAll() {
+		var root=document.getElementById('pool-root');
+		if(!root) return;
+		var sc=calcScores();
+		var views=['standings','groups','knockout'];
+		var icons=['🏆 Standings','📋 Groups','⚡ Knockout'];
+
+		var html=renderMini(sc);
+		html+='<div class="pool-rule-note">3pt Win · 1pt Draw · 1pt/Goal · 1pt Shutout · +5 Zero-Goal Bonus · Tiebreaker: Goal Diff</div>';
+		html+='<div class="pool-tabs">';
+		views.forEach(function(v,i){
+			html+='<button class="pool-tab'+(state.view===v?' active':'')+'" onclick="wcp.setView(\''+v+'\')">'+icons[i]+'</button>';
+		});
+		html+='</div>';
+
+		if(state.view==='standings') html+=renderStandings(sc);
+		else if(state.view==='groups') html+=renderGroups();
+		else html+=renderKnockout();
+
+		root.innerHTML=html;
+	}
+
+	// Only re-render standings (keeps input focus during score entry)
+	function updateStandings() {
+		var sc=calcScores();
+		// Update mini strip
+		var mini=document.querySelector('.pool-mini');
+		if(mini) { var tmp=document.createElement('div'); tmp.innerHTML=renderMini(sc); mini.outerHTML=tmp.firstChild.outerHTML; }
+		// Update standings body if on standings view
+		var body=document.getElementById('pool-standings-body');
+		if(body) { var tmp2=document.createElement('div'); tmp2.innerHTML=renderStandings(sc); body.outerHTML=tmp2.firstChild.outerHTML; }
+	}
+
+	// ── PUBLIC API ────────────────────────────────────────────────────────────
+	window.wcp = {
+		setView: function(v) { state.view=v; renderAll(); },
+		setGroup: function(g) { state.group=g; renderAll(); },
+		setRound: function(r) { state.round=r; renderAll(); },
+		expand: function(p) { state.expanded=(state.expanded===p?null:p); renderAll(); },
+
+		gs: function(id, field, val) {
+			if(!state.gs[id]) state.gs[id]={};
+			state.gs[id][field]=val;
+			saveState();
+			updateStandings();
+		},
+
+		ko: function(id, field, val) {
+			state.ko=state.ko.map(function(g){
+				if(g.id!==id) return g;
+				var updated=Object.assign({},g); updated[field]=val; return updated;
+			});
+			saveState();
+			renderAll();
+		}
+	};
+
+	// ── INIT ─────────────────────────────────────────────────────────────────
+	document.addEventListener('DOMContentLoaded', function(){
+		loadState();
+		renderAll();
+	});
+
+	})();
+	</script>
 
 	</body>
 </html>

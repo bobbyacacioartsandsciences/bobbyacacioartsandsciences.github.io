@@ -583,14 +583,47 @@ print 'It took ' + i + ' iterations to sort the deck.';</code></pre>
 		return games;
 	}
 
+	// ── COMPLETED RESULTS (hard-coded final scores) ───────────────────────────
+	var COMPLETED = {
+		'A1': {s1:'2',s2:'0'},  // Mexico 2-0 South Africa  (Jun 11)
+		'A6': {s1:'2',s2:'1'},  // South Korea 2-1 Czechia  (Jun 11)
+		'B1': {s1:'1',s2:'1'},  // Canada 1-1 Bosnia        (Jun 12)
+		'D1': {s1:'4',s2:'1'},  // USA 4-1 Paraguay         (Jun 12)
+		'E1': {s1:'7',s2:'1'},  // Germany 7-1 Curacao      (Jun 14)
+		'E6': {s1:'1',s2:'0'},  // Ivory Coast 1-0 Ecuador  (Jun 14)
+		'F1': {s1:'2',s2:'2'},  // Netherlands 2-2 Japan    (Jun 14)
+		'F6': {s1:'5',s2:'1'},  // Sweden 5-1 Tunisia       (Jun 14)
+		'G1': {s1:'1',s2:'1'},  // Belgium 1-1 Egypt        (Jun 15)
+		'G6': {s1:'2',s2:'2'},  // Iran 2-2 New Zealand     (Jun 15)
+		'H1': {s1:'0',s2:'0'},  // Spain 0-0 Cape Verde     (Jun 15)
+		'H6': {s1:'1',s2:'1'},  // Saudi Arabia 1-1 Uruguay (Jun 15)
+		'I1': {s1:'3',s2:'1'},  // France 3-1 Senegal       (Jun 16)
+		'I6': {s1:'1',s2:'4'},  // Iraq 1-4 Norway          (Jun 16)
+		'J1': {s1:'3',s2:'0'},  // Argentina 3-0 Algeria    (Jun 16)
+		'J6': {s1:'2',s2:'1'},  // Austria 2-1 Jordan    (Jun 16)
+	};
+
 	function loadState() {
-		try { var g=localStorage.getItem('wc26gs'); if(g) state.gs=JSON.parse(g); } catch(e){}
+		// Start from hard-coded completed results
+		state.gs = Object.assign({}, COMPLETED);
+		// Merge user scores for non-completed games only
+		try {
+			var saved = JSON.parse(localStorage.getItem('wc26gs') || '{}');
+			Object.keys(saved).forEach(function(id) {
+				if (!COMPLETED[id]) state.gs[id] = saved[id];
+			});
+		} catch(e) {}
 		try { var k=localStorage.getItem('wc26ko'); if(k) state.ko=JSON.parse(k); else state.ko=initKO(); } catch(e){ state.ko=initKO(); }
 		if(!state.ko||!state.ko.length) state.ko=initKO();
 	}
 
 	function saveState() {
-		try { localStorage.setItem('wc26gs',JSON.stringify(state.gs)); } catch(e){}
+		// Only save non-completed game scores to localStorage
+		var toSave = {};
+		Object.keys(state.gs).forEach(function(id) {
+			if (!COMPLETED[id]) toSave[id] = state.gs[id];
+		});
+		try { localStorage.setItem('wc26gs',JSON.stringify(toSave)); } catch(e){}
 		try { localStorage.setItem('wc26ko',JSON.stringify(state.ko)); } catch(e){}
 	}
 
@@ -736,16 +769,18 @@ print 'It took ' + i + ' iterations to sort the deck.';</code></pre>
 			var sc=state.gs[game.id]||{};
 			var o1=TEAM_OWNER[game.t1]||null, o2=TEAM_OWNER[game.t2]||null;
 			var c1=o1?PC[o1].accent:'#94a3b8', c2=o2?PC[o2].accent:'#94a3b8';
+			var isFinal=!!COMPLETED[game.id];
 
-			html+='<div class="pool-game">';
+			html+='<div class="pool-game" style="'+(isFinal?'border-color:rgba(255,255,255,0.18);':'')+'">';
+			if(isFinal) html+='<div style="text-align:center;font-size:9px;font-weight:700;letter-spacing:.1em;color:#6b7280;margin-bottom:6px">✅ FINAL</div>';
 			html+='<div class="pool-game-row">';
 			// Team 1
 			html+='<div class="pool-team"><div style="display:flex;align-items:center;gap:5px;margin-bottom:3px">'+dot(game.t1)+'<span style="color:'+c1+'">'+game.t1+'</span></div>'+(o1?badge(o1):'')+'</div>';
 			// Score inputs
 			html+='<div style="display:flex;align-items:center;gap:5px">';
-			html+='<input class="pool-score-input" type="number" min="0" max="20" id="gs-'+game.id+'-s1" value="'+(sc.s1!==undefined?sc.s1:'')+'" oninput="wcp.gs(\''+esc(game.id)+'\',\'s1\',this.value)" placeholder="—">';
+			html+='<input class="pool-score-input" type="number" min="0" max="20" id="gs-'+game.id+'-s1" value="'+(sc.s1!==undefined?sc.s1:'')+'" '+(isFinal?'readonly style="opacity:0.6;cursor:default"':'')+' oninput="'+(isFinal?'':' wcp.gs(\''+esc(game.id)+'\',\'s1\',this.value)')+'" placeholder="—">';
 			html+='<span class="pool-sep">–</span>';
-			html+='<input class="pool-score-input" type="number" min="0" max="20" id="gs-'+game.id+'-s2" value="'+(sc.s2!==undefined?sc.s2:'')+'" oninput="wcp.gs(\''+esc(game.id)+'\',\'s2\',this.value)" placeholder="—">';
+			html+='<input class="pool-score-input" type="number" min="0" max="20" id="gs-'+game.id+'-s2" value="'+(sc.s2!==undefined?sc.s2:'')+'" '+(isFinal?'readonly style="opacity:0.6;cursor:default"':'')+' oninput="'+(isFinal?'':' wcp.gs(\''+esc(game.id)+'\',\'s2\',this.value)')+'" placeholder="—">';
 			html+='</div>';
 			// Team 2
 			html+='<div class="pool-team right"><div style="display:flex;align-items:center;justify-content:flex-end;gap:5px;margin-bottom:3px"><span style="color:'+c2+'">'+game.t2+'</span>'+dot(game.t2)+'</div>'+(o2?badge(o2):'')+'</div>';

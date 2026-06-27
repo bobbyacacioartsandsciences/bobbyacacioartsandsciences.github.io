@@ -575,10 +575,30 @@ print 'It took ' + i + ' iterations to sort the deck.';</code></pre>
 	};
 
 	function initKO() {
-		var games = [];
+		// Pre-populate known R32 matchups (confirmed from official schedule)
+		var R32_PRE = [
+			{t1:'South Africa',           t2:'Canada'},              // Jun 29 - confirmed
+			{t1:'Norway',                 t2:'Ivory Coast'},          // Jun 30 - confirmed
+			{t1:'France',                 t2:'Sweden'},               // Jun 30 - confirmed
+			{t1:'Mexico',                 t2:''},                     // Jun 30 - vs best 3rd C/E/F/H/I
+			{t1:'',                       t2:''},                     // Jul 1  - Group L winner vs best 3rd
+			{t1:'Belgium',                t2:''},                     // Jul 1  - vs best 3rd A/E/H/I/J
+			{t1:'USA',                    t2:'Bosnia & Herzegovina'}, // Jul 1  - confirmed
+			{t1:'Spain',                  t2:''},                     // Jul 2  - vs Group J 2nd (ALG or AUT)
+			{t1:'Portugal',               t2:''},                     // Jul 2  - vs Group L 2nd
+			{t1:'Switzerland',            t2:''},                     // Jul 2  - TBD
+			{t1:'Netherlands',            t2:'Morocco'},              // TBD    - confirmed
+			{t1:'Germany',                t2:''},                     // TBD
+			{t1:'Brazil',                 t2:''},                     // TBD
+			{t1:'Argentina',              t2:''},                     // TBD
+			{t1:'Colombia',               t2:''},                     // TBD
+			{t1:'England',                t2:''},                     // TBD
+		];
+		var games=[], r32i=0;
 		KO_ROUNDS.forEach(function(r){
 			for(var i=0;i<r.count;i++){
-				games.push({id:r.id+'-'+i,round:r.id,t1:'',t2:'',s1:'',s2:'',pens:false,pw:''});
+				var pre=(r.id==='R32'&&r32i<R32_PRE.length)?R32_PRE[r32i++]:{};
+				games.push({id:r.id+'-'+i,round:r.id,t1:pre.t1||'',t2:pre.t2||'',s1:'',s2:'',pens:false,pw:''});
 			}
 		});
 		return games;
@@ -670,6 +690,30 @@ print 'It took ' + i + ' iterations to sort the deck.';</code></pre>
 		'E4': {s1:'0',s2:'2'},  // Curaçao 0-2 Ivory Coast
 		'F3': {s1:'3',s2:'1'},  // Netherlands 3-1 Tunisia
 		'F4': {s1:'1',s2:'1'},  // Japan 1-1 Sweden
+
+		// Day 16 (Jun 26)
+		'G3': {s1:'5',s2:'1'},  // Belgium 5-1 New Zealand
+		'G4': {s1:'1',s2:'1'},  // Egypt 1-1 Iran
+		'H3': {s1:'1',s2:'0'},  // Spain 1-0 Uruguay
+		'H4': {s1:'0',s2:'0'},  // Cape Verde 0-0 Saudi Arabia
+		'I3': {s1:'1',s2:'4'},  // France 1-4 Norway
+		'I4': {s1:'5',s2:'0'},  // Senegal 5-0 Iraq
+	};
+
+	// ── ELIMINATED TEAMS ─────────────────────────────────────────────────────
+	// 4th place in completed groups + mathematically impossible to advance
+	var ELIMINATED = {
+		'Czechia':true,       // Group A 4th (1pt)
+		'Qatar':true,         // Group B 4th (1pt)
+		'Haiti':true,         // Group C 4th (0pts)
+		'Turkey':true,        // Group D 4th (3pts)
+		'Curaçao':true,       // Group E 4th (1pt)
+		'Tunisia':true,       // Group F 4th (0pts)
+		'New Zealand':true,   // Group G 4th (1pt)
+		'Saudi Arabia':true,  // Group H 4th (2pts)
+		'Iraq':true,          // Group I 4th (0pts)
+		'Jordan':true,        // Group J 4th (0pts, plays today)
+		'Uzbekistan':true,    // Group K 4th (0pts, plays today)
 	};
 
 	function loadState() {
@@ -798,11 +842,12 @@ print 'It took ' + i + ' iterations to sort the deck.';</code></pre>
 		ranks.forEach(function(r,i){
 			var c=PC[r.p];
 			var isExp=state.expanded===r.p;
+			var activeCount=PLAYERS[r.p].filter(function(t){return !ELIMINATED[t];}).length;
 			html+='<div class="pool-stand-card" style="border-color:'+(i===0?c.accent:'rgba(255,255,255,0.1)')+';background:linear-gradient(135deg,'+c.bg+' 0%,rgba(255,255,255,0.02) 50%)">';
 			html+='<div class="pool-stand-header" onclick="wcp.expand(\''+r.p+'\')">';
 			html+='<span class="pool-medal">'+MEDALS[i]+'</span>';
 			html+='<div style="flex:1"><div class="pool-stand-name" style="color:'+c.accent+'">'+r.p+' '+badge(r.p)+'</div>';
-			html+='<div class="pool-stand-sub">GD '+(r.gd>0?'+':'')+r.gd+' &nbsp;·&nbsp; 12 teams</div></div>';
+			html+='<div class="pool-stand-sub">GD '+(r.gd>0?'+':'')+r.gd+' &nbsp;·&nbsp; <span style="color:'+c.accent+'">'+activeCount+' active</span></div></div>';
 			html+='<div style="text-align:right"><div class="pool-stand-pts" style="color:'+c.accent+'">'+r.pts+'</div><div style="font-size:10px;color:#555;text-transform:uppercase;letter-spacing:.06em">pts</div></div>';
 			html+='<span style="color:#555;font-size:13px;margin-left:8px">'+(isExp?'▲':'▼')+'</span>';
 			html+='</div>';
@@ -811,9 +856,14 @@ print 'It took ' + i + ' iterations to sort the deck.';</code></pre>
 				PLAYERS[r.p].forEach(function(team){
 					var tp=sc.pBD[r.p][team]||0;
 					var isBonus=sc.tGF[team]===0&&tp>=5;
-					html+='<div class="pool-team-row">';
-					html+='<span style="display:flex;align-items:center;gap:5px">'+dot(team,5)+'<span style="color:'+(tp>0?'#cbd5e1':'#4b5563')+'">'+team+'</span>'+(isBonus?'<span class="pool-bonus-tag">+5⭐</span>':'' )+'</span>';
-					html+='<span class="pool-team-pts" style="color:'+(tp>0?c.accent:'#374151')+'">'+tp+'</span>';
+					var isElim=!!ELIMINATED[team];
+					html+='<div class="pool-team-row" style="'+(isElim?'opacity:0.45':'')+'">';
+					html+='<span style="display:flex;align-items:center;gap:5px">'+dot(team,5);
+					html+='<span style="'+(isElim?'text-decoration:line-through;color:#4b5563':'color:'+(tp>0?'#cbd5e1':'#4b5563'))+'">'+team+'</span>';
+					if(isElim) html+='<span style="font-size:9px;color:#ef4444;font-weight:700">OUT</span>';
+					if(isBonus) html+='<span class="pool-bonus-tag">+5⭐</span>';
+					html+='</span>';
+					html+='<span class="pool-team-pts" style="color:'+(isElim?'#374151':tp>0?c.accent:'#374151')+'">'+tp+'</span>';
 					html+='</div>';
 				});
 				html+='</div>';

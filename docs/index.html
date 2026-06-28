@@ -765,16 +765,23 @@ print 'It took ' + i + ' iterations to sort the deck.';</code></pre>
 				if (!COMPLETED[id]) state.gs[id] = saved[id];
 			});
 		} catch(e) {}
-		// Always rebuild KO from initKO first, then overlay saved data
+
 		var fresh = initKO();
 		try {
 			var savedKO = JSON.parse(localStorage.getItem('wc26ko') || '[]');
 			if (savedKO.length) {
-				// Merge: keep hardcoded results, overlay user edits for others
 				state.ko = fresh.map(function(game) {
-					if (KO_COMPLETED[game.id]) return game; // never overwrite completed
+					if (KO_COMPLETED[game.id]) return game; // lock completed results
 					var s = savedKO.find(function(g) { return g.id === game.id; });
-					return s || game;
+					if (!s) return game;
+					return {
+						id: game.id, round: game.round,
+						// Always use hardcoded team names — never empty saved slots
+						t1: game.t1 || s.t1,
+						t2: game.t2 || s.t2,
+						s1: s.s1, s2: s.s2,
+						pens: s.pens, pw: s.pw
+					};
 				});
 			} else {
 				state.ko = fresh;

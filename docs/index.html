@@ -575,30 +575,44 @@ print 'It took ' + i + ' iterations to sort the deck.';</code></pre>
 	};
 
 	function initKO() {
-		// Pre-populate known R32 matchups (confirmed from official schedule)
-		var R32_PRE = [
-			{t1:'South Africa',           t2:'Canada'},              // Jun 29 - confirmed
-			{t1:'Norway',                 t2:'Ivory Coast'},          // Jun 30 - confirmed
-			{t1:'France',                 t2:'Sweden'},               // Jun 30 - confirmed
-			{t1:'Mexico',                 t2:''},                     // Jun 30 - vs best 3rd C/E/F/H/I
-			{t1:'',                       t2:''},                     // Jul 1  - Group L winner vs best 3rd
-			{t1:'Belgium',                t2:''},                     // Jul 1  - vs best 3rd A/E/H/I/J
-			{t1:'USA',                    t2:'Bosnia & Herzegovina'}, // Jul 1  - confirmed
-			{t1:'Spain',                  t2:''},                     // Jul 2  - vs Group J 2nd (ALG or AUT)
-			{t1:'Portugal',               t2:''},                     // Jul 2  - vs Group L 2nd
-			{t1:'Switzerland',            t2:''},                     // Jul 2  - TBD
-			{t1:'Netherlands',            t2:'Morocco'},              // TBD    - confirmed
-			{t1:'Germany',                t2:''},                     // TBD
-			{t1:'Brazil',                 t2:''},                     // TBD
-			{t1:'Argentina',              t2:''},                     // TBD
-			{t1:'Colombia',               t2:''},                     // TBD
-			{t1:'England',                t2:''},                     // TBD
+		// ── ROUND OF 32 - fully confirmed bracket ─────────────────────────────
+		var R32 = [
+			// Jun 28
+			{t1:'South Africa', t2:'Canada',               s1:'0', s2:'1', pens:false, pw:''},  // FINAL: Canada 1-0
+			// Jun 29
+			{t1:'Brazil',       t2:'Japan',                s1:'',  s2:'',  pens:false, pw:''},
+			{t1:'Germany',      t2:'Paraguay',             s1:'',  s2:'',  pens:false, pw:''},
+			{t1:'Netherlands',  t2:'Morocco',              s1:'',  s2:'',  pens:false, pw:''},
+			// Jun 30
+			{t1:'Ivory Coast',  t2:'Norway',               s1:'',  s2:'',  pens:false, pw:''},
+			{t1:'France',       t2:'Sweden',               s1:'',  s2:'',  pens:false, pw:''},
+			{t1:'Mexico',       t2:'Ecuador',              s1:'',  s2:'',  pens:false, pw:''},
+			// Jul 1
+			{t1:'England',      t2:'DR Congo',             s1:'',  s2:'',  pens:false, pw:''},
+			{t1:'Belgium',      t2:'Senegal',              s1:'',  s2:'',  pens:false, pw:''},
+			{t1:'USA',          t2:'Bosnia & Herzegovina', s1:'',  s2:'',  pens:false, pw:''},
+			// Jul 2
+			{t1:'Spain',        t2:'Austria',              s1:'',  s2:'',  pens:false, pw:''},
+			{t1:'Portugal',     t2:'Croatia',              s1:'',  s2:'',  pens:false, pw:''},
+			{t1:'Switzerland',  t2:'Algeria',              s1:'',  s2:'',  pens:false, pw:''},
+			// Jul 3
+			{t1:'Australia',    t2:'Egypt',                s1:'',  s2:'',  pens:false, pw:''},
+			{t1:'Argentina',    t2:'Cape Verde',           s1:'',  s2:'',  pens:false, pw:''},
+			{t1:'Colombia',     t2:'Ghana',                s1:'',  s2:'',  pens:false, pw:''},
 		];
-		var games=[], r32i=0;
-		KO_ROUNDS.forEach(function(r){
-			for(var i=0;i<r.count;i++){
-				var pre=(r.id==='R32'&&r32i<R32_PRE.length)?R32_PRE[r32i++]:{};
-				games.push({id:r.id+'-'+i,round:r.id,t1:pre.t1||'',t2:pre.t2||'',s1:'',s2:'',pens:false,pw:''});
+
+		var games = [];
+		var r32i = 0;
+		KO_ROUNDS.forEach(function(r) {
+			for (var i = 0; i < r.count; i++) {
+				var pre = (r.id === 'R32' && r32i < R32.length) ? R32[r32i++] : {};
+				games.push({
+					id: r.id + '-' + i, round: r.id,
+					t1: pre.t1 || '', t2: pre.t2 || '',
+					s1: pre.s1 !== undefined ? pre.s1 : '',
+					s2: pre.s2 !== undefined ? pre.s2 : '',
+					pens: pre.pens || false, pw: pre.pw || ''
+				});
 			}
 		});
 		return games;
@@ -698,36 +712,75 @@ print 'It took ' + i + ' iterations to sort the deck.';</code></pre>
 		'H4': {s1:'0',s2:'0'},  // Cape Verde 0-0 Saudi Arabia
 		'I3': {s1:'1',s2:'4'},  // France 1-4 Norway
 		'I4': {s1:'5',s2:'0'},  // Senegal 5-0 Iraq
+
+		// Day 17 (Jun 27) - ALL GROUPS COMPLETE
+		'J3': {s1:'3',s2:'1'},  // Argentina 3-1 Jordan
+		'J4': {s1:'3',s2:'3'},  // Algeria 3-3 Austria
+		'K3': {s1:'0',s2:'0'},  // Portugal 0-0 Colombia
+		'K4': {s1:'3',s2:'1'},  // DR Congo 3-1 Uzbekistan
+		'L3': {s1:'2',s2:'0'},  // England 2-0 Panama
+		'L4': {s1:'2',s2:'1'},  // Croatia 2-1 Ghana
 	};
 
-	// ── ELIMINATED TEAMS ─────────────────────────────────────────────────────
-	// 4th place in completed groups + mathematically impossible to advance
+	// ── ELIMINATED TEAMS (confirmed after group stage) ────────────────────────
 	var ELIMINATED = {
-		'Czechia':true,       // Group A 4th (1pt)
-		'Qatar':true,         // Group B 4th (1pt)
-		'Haiti':true,         // Group C 4th (0pts)
-		'Turkey':true,        // Group D 4th (3pts)
-		'Curaçao':true,       // Group E 4th (1pt)
-		'Tunisia':true,       // Group F 4th (0pts)
-		'New Zealand':true,   // Group G 4th (1pt)
-		'Saudi Arabia':true,  // Group H 4th (2pts)
-		'Iraq':true,          // Group I 4th (0pts)
-		'Jordan':true,        // Group J 4th (0pts, plays today)
-		'Uzbekistan':true,    // Group K 4th (0pts, plays today)
+		// Group A - bottom 2
+		'South Korea': true,    // 3rd, did not qualify as best 3rd
+		'Czechia':     true,    // 4th
+		// Group B
+		'Qatar':       true,    // 4th
+		// Group C
+		'Scotland':    true,    // 3rd, did not qualify as best 3rd
+		'Haiti':       true,    // 4th
+		// Group D
+		'Turkey':      true,    // 4th
+		// Group E
+		'Curaçao':     true,    // 4th
+		// Group F
+		'Tunisia':     true,    // 4th
+		// Group G
+		'Iran':        true,    // 3rd, did not qualify as best 3rd
+		'New Zealand': true,    // 4th
+		// Group H
+		'Uruguay':     true,    // 3rd, did not qualify as best 3rd
+		'Saudi Arabia':true,    // 4th
+		// Group I
+		'Iraq':        true,    // 4th
+		// Group J
+		'Jordan':      true,    // 4th
+		// Group K
+		'Uzbekistan':  true,    // 4th
+		// Group L
+		'Panama':      true,    // 4th
 	};
+
+	// Hardcoded KO results that should never be overwritten by localStorage
+	var KO_COMPLETED = { 'R32-0': true }; // South Africa 0-1 Canada (Jun 28)
 
 	function loadState() {
-		// Start from hard-coded completed results
 		state.gs = Object.assign({}, COMPLETED);
-		// Merge user scores for non-completed games only
 		try {
 			var saved = JSON.parse(localStorage.getItem('wc26gs') || '{}');
 			Object.keys(saved).forEach(function(id) {
 				if (!COMPLETED[id]) state.gs[id] = saved[id];
 			});
 		} catch(e) {}
-		try { var k=localStorage.getItem('wc26ko'); if(k) state.ko=JSON.parse(k); else state.ko=initKO(); } catch(e){ state.ko=initKO(); }
-		if(!state.ko||!state.ko.length) state.ko=initKO();
+		// Always rebuild KO from initKO first, then overlay saved data
+		var fresh = initKO();
+		try {
+			var savedKO = JSON.parse(localStorage.getItem('wc26ko') || '[]');
+			if (savedKO.length) {
+				// Merge: keep hardcoded results, overlay user edits for others
+				state.ko = fresh.map(function(game) {
+					if (KO_COMPLETED[game.id]) return game; // never overwrite completed
+					var s = savedKO.find(function(g) { return g.id === game.id; });
+					return s || game;
+				});
+			} else {
+				state.ko = fresh;
+			}
+		} catch(e) { state.ko = fresh; }
+		if (!state.ko || !state.ko.length) state.ko = fresh;
 	}
 
 	function saveState() {
